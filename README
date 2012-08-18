@@ -1,0 +1,23 @@
+Mutef: Mutually exclusive file access for applications
+------------------------------------------------------
+
+Some of the applications which read and perform modifications a file do not support warnings when the file is parallely modified form multiple terminals.
+I faced this problem when using hnb and decided to write a wrapper script over hnb which provides mutually exclusive file access. 
+
+The file mutef.c compiles to a binary which can be used instead of hnb to open the files.
+
+Steps:
+
+1. mv /usr/bin/hnb /usr/bin/orighnb
+2. cc mutexopenc -o hnb
+3. mv ./hnb /usr/bin/hnb
+
+The first step renames the original hnb binary in the /usr/bin directory. The compiled binary from the mutef.c is becomes the new /usr/bin/hnb.
+Any file can now be opened using the usual "hnb <filename>" command.
+
+The program works as follows:
+
+First it check whether a lock file(filename + "_lock") exists for the file which is to be opened. If so, it exits after issuing an "already open" warning.
+Otherwise, it opens the file after creating a lock file. The lock file is then deleted after the application is closed.
+
+The program can be modified for arbitrary applications with minor modifications.
